@@ -1,7 +1,7 @@
 {
   "name": "everything-qiu",
   "version": "1.0.0",
-  "description": "",
+  "description": "A Node.js native addon wrapper for Everything search engine, providing fast file search capabilities on Windows systems",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -13,10 +13,26 @@
   "keywords": [
     "qiu",
     "typescript",
-    "module"
+    "module",
+    "everything",
+    "search",
+    "files",
+    "windows"
   ],
   "author": "qiu ge",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zhangqiu-ai/everything-qiu"
+  },
+  "bugs": {
+    "url": "https://github.com/zhangqiu-ai/everything-qiu/issues"
+  },
+  "homepage": "https://github.com/zhangqiu-ai/everything-qiu#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "os": ["win32"],
   "devDependencies": {
     "@types/node": "^22.15.21",
     "node-addon-api": "^8.3.1",
@@ -24,6 +40,10 @@
     "typescript": "^5.8.3"
   },
   "files": [
-    "dist"
+    "dist",
+    "src",
+    "binding.gyp",
+    "README.md",
+    "LICENSE"
   ]
 }
