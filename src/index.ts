@@ -1,4 +1,4 @@
-import { SearchResult } from './types';
+import { SearchResult, SearchOptions } from './types';
 import { join } from 'path';
 
 // 设置 DLL 搜索路径为绝对路径
@@ -10,10 +10,10 @@ const addonPath = join(__dirname, '..', 'build', 'Release', 'everything.node');
 const addon = require(addonPath);
 
 export class Everything {
-  public search(query: string): Promise<SearchResult[]> {
+  public search(query: string, options?: SearchOptions): Promise<SearchResult[]> {
     return new Promise((resolve, reject) => {
       try {
-        const results = addon.search(query);
+        const results = addon.search(query, options);
         resolve(results);
       } catch (error) {
         reject(error);

@@ -24,6 +24,35 @@ Napi::Value Search(const Napi::CallbackInfo& info) {
     
     std::u16string searchStr = info[0].As<Napi::String>().Utf16Value();
     
+    // 处理选项
+    if (info.Length() > 1 && info[1].IsObject()) {
+        Napi::Object options = info[1].As<Napi::Object>();
+        
+        if (options.Has("matchPath")) {
+            Everything_SetMatchPath(options.Get("matchPath").ToBoolean());
+        }
+        
+        if (options.Has("matchCase")) {
+            Everything_SetMatchCase(options.Get("matchCase").ToBoolean());
+        }
+        
+        if (options.Has("matchWholeWord")) {
+            Everything_SetMatchWholeWord(options.Get("matchWholeWord").ToBoolean());
+        }
+        
+        if (options.Has("regex")) {
+            Everything_SetRegex(options.Get("regex").ToBoolean());
+        }
+        
+        if (options.Has("maxResults")) {
+            Everything_SetMax(options.Get("maxResults").ToNumber().Uint32Value());
+        }
+        
+        if (options.Has("sort")) {
+            Everything_SetSort(options.Get("sort").ToNumber().Uint32Value());
+        }
+    }
+    
     // 初始化 Everything
     Everything_SetSearchW(reinterpret_cast<LPCWSTR>(searchStr.c_str()));
     
@@ -63,6 +92,32 @@ Napi::Value Search(const Napi::CallbackInfo& info) {
                 reinterpret_cast<const char16_t*>(filePath), 
                 wcslen(filePath)));
                 
+        // 附加信息
+        result.Set("isFolder", Everything_IsFolderResult(i));
+        
+        LARGE_INTEGER size;
+        if (Everything_GetResultSize(i, &size)) {
+            result.Set("size", Napi::Number::New(env, static_cast<double>(size.QuadPart)));
+        }
+        
+        FILETIME created, modified;
+        if (Everything_GetResultDateCreated(i, &created)) {
+            // 转换 FILETIME 到 JavaScript Date
+            ULARGE_INTEGER uli;
+            uli.LowPart = created.dwLowDateTime;
+            uli.HighPart = created.dwHighDateTime;
+            double ms = static_cast<double>(uli.QuadPart) / 10000.0 - 11644473600000.0;
+            result.Set("created", Napi::Date::New(env, ms));
+        }
+        
+        if (Everything_GetResultDateModified(i, &modified)) {
+            ULARGE_INTEGER uli;
+            uli.LowPart = modified.dwLowDateTime;
+            uli.HighPart = modified.dwHighDateTime;
+            double ms = static_cast<double>(uli.QuadPart) / 10000.0 - 11644473600000.0;
+            result.Set("modified", Napi::Date::New(env, ms));
+        }
+        
         results[i] = result;
     }
     
